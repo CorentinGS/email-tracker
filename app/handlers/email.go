@@ -158,7 +158,7 @@ func (u *EmailController) PostEmail(c echo.Context) error {
 		return RedirectToErrorPage(c, http.StatusInternalServerError)
 	}
 
-	adminErrorComponent := page.AdminError("Email link: https://tracker.corentings.dev/image/" + email.Uuid.String())
+	adminErrorComponent := page.AdminError("Email link: https://pixel.corentings.dev/image/" + email.Uuid.String())
 
 	return Render(c, http.StatusOK, adminErrorComponent)
 }
