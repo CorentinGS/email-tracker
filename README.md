@@ -1,3 +1,3 @@
-# Chess Bet
+# Email Tracker
 
-A bet platform for chess
+A small service to track if people read my emails or not
