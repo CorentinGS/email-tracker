@@ -1,6 +1,9 @@
 package handlers
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -8,6 +11,7 @@ import (
 
 	"github.com/corentings/email-tracker/app/views/page"
 	"github.com/corentings/email-tracker/config"
+	db "github.com/corentings/email-tracker/db/sqlc"
 	"github.com/corentings/email-tracker/pkg/jwt"
 	"github.com/corentings/email-tracker/services/email"
 	"github.com/google/uuid"
@@ -83,11 +87,58 @@ func (u *EmailController) GetImage(c echo.Context) error {
 	err = u.useCase.AddTracking(c.Request().Context(), email, ip)
 	if err != nil {
 		slog.Error("Signature: error adding tracking event", slog.String("error", err.Error()))
-		return RedirectToErrorPage(c, http.StatusInternalServerError)
+		return c.File("assets/img/favicon.ico")
+	}
+
+	// send a message to discord using a webhook
+	err = SendDiscordMessage(c.Request().Context(), email, ip)
+	if err != nil {
+		slog.Error("Signature: error sending discord message", slog.String("error", err.Error()))
+		return c.File("assets/img/favicon.ico")
 	}
 
 	// return the image
 	return c.File("assets/img/favicon.ico")
+}
+
+type webhook struct {
+	Content string `json:"content"`
+}
+
+const discordTimeout = 10
+
+func SendDiscordMessage(ctx context.Context, email db.Email, ip string) error {
+	// create a new discord message
+	message := "```New tracking event```\n" +
+		"Recipient:** " + email.Recipient + "**\n" +
+		"Subject: **" + email.Subject + "**\n" +
+		"> IP: " + ip
+
+	webhookContent := webhook{
+		Content: message,
+	}
+
+	jsonWebhook, _ := json.Marshal(webhookContent)
+
+	// Create a new context with a timeout
+	ctx, cancel := context.WithTimeout(ctx, discordTimeout*time.Second)
+	// Cancel the context when we are done to release resources
+	defer cancel()
+
+	client := &http.Client{}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, config.WebhookURL, bytes.NewBuffer(jsonWebhook))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	res, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	return err
 }
 
 func (u *EmailController) PostEmail(c echo.Context) error {

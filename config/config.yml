@@ -11,7 +11,7 @@ postgres:
   pool_max: 2
 auth:
   access_token: your_access_token
-
+  webhook_url: what_did_you_expect
 jwt:
   jwt_header_len: 2
   jwt_expiration: 92

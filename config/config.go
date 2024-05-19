@@ -49,10 +49,14 @@ type (
 	// AUTH -.
 	AUTH struct {
 		AccessToken string `env-required:"true" env:"AUTH_ACCESS" yaml:"access_token"`
+		WebhookURL  string `env-required:"true" env:"WEBHOOK_URL" yaml:"webhook_url"`
 	}
 )
 
-var AccessToken string //nolint:gochecknoglobals //Very Secure
+var (
+	AccessToken string //nolint:gochecknoglobals //Very Secure
+	WebhookURL  string //nolint:gochecknoglobals //Very Secure
+)
 
 // NewConfig returns app config.
 func NewConfig() (*Config, error) {
@@ -69,6 +73,7 @@ func NewConfig() (*Config, error) {
 	}
 
 	AccessToken = cfg.AUTH.AccessToken
+	WebhookURL = cfg.AUTH.WebhookURL
 
 	return cfg, nil
 }
