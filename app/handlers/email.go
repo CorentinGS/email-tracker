@@ -3,8 +3,10 @@ package handlers
 import (
 	"log/slog"
 	"net/http"
+	"strconv"
 	"time"
 
+	"github.com/corentings/email-tracker/app/views/page"
 	"github.com/corentings/email-tracker/config"
 	"github.com/corentings/email-tracker/pkg/jwt"
 	"github.com/corentings/email-tracker/services/email"
@@ -86,4 +88,103 @@ func (u *EmailController) GetImage(c echo.Context) error {
 
 	// return the image
 	return c.File("assets/img/favicon.ico")
+}
+
+func (u *EmailController) PostEmail(c echo.Context) error {
+	// get form values
+	recipient := c.FormValue("recipient")
+	subject := c.FormValue("subject")
+
+	// if recipient or subject is empty
+	if recipient == "" || subject == "" {
+		return RedirectToErrorPage(c, http.StatusBadRequest)
+	}
+
+	// create a new email
+	email, err := u.useCase.CreateEmail(c.Request().Context(), recipient, subject)
+	if err != nil {
+		slog.Error("CreateEmail: error creating email", slog.String("error", err.Error()))
+		return RedirectToErrorPage(c, http.StatusInternalServerError)
+	}
+
+	adminErrorComponent := page.AdminError("Email link: " + email.Uuid.String())
+
+	return Render(c, http.StatusOK, adminErrorComponent)
+}
+
+func (u *EmailController) GetEmails(c echo.Context) error {
+	// get page and limit values
+	pageParam, limitParam := getPageLimitValues(c)
+
+	if pageParam < 1 {
+		pageParam = 1
+	}
+
+	if limitParam < 1 {
+		limitParam = 10
+	}
+
+	// get emails from the database
+	emails, err := u.useCase.GetEmailsWithPagination(c.Request().Context(), limitParam, (pageParam-1)*limitParam)
+	if err != nil {
+		slog.Error("GetEmails: error getting emails", slog.String("error", err.Error()))
+		return RedirectToErrorPage(c, http.StatusInternalServerError)
+	}
+
+	if len(emails) == 0 {
+		return c.NoContent(http.StatusNoContent)
+	}
+
+	slog.Debug("GetEmails: emails", slog.Int("count", len(emails)))
+	// render the emails
+	adminEmailsComponent := page.ListEmails(emails, pageParam)
+
+	return Render(c, http.StatusOK, adminEmailsComponent)
+}
+
+func (u *EmailController) GetTrackers(c echo.Context) error {
+	// get page and limit values
+	pageParam, limitParam := getPageLimitValues(c)
+
+	if pageParam < 1 {
+		pageParam = 1
+	}
+
+	if limitParam < 1 {
+		limitParam = 10
+	}
+
+	// get trackers from the database
+	trackers, err := u.useCase.GetTrackersWithPagination(c.Request().Context(), limitParam, (pageParam-1)*limitParam)
+	if err != nil {
+		slog.Error("GetTrackers: error getting trackers", slog.String("error", err.Error()))
+		return RedirectToErrorPage(c, http.StatusInternalServerError)
+	}
+
+	if len(trackers) == 0 {
+		return c.NoContent(http.StatusNoContent)
+	}
+
+	slog.Debug("GetTrackers: trackers", slog.Int("count", len(trackers)))
+	// render the trackers
+	adminTrackersComponent := page.ListTrackers(trackers, pageParam)
+
+	return Render(c, http.StatusOK, adminTrackersComponent)
+}
+
+func getPageLimitValues(c echo.Context) (pageParamInt int, limitInt int) {
+	pageParam := c.QueryParam("page")
+	limit := c.QueryParam("limit")
+
+	// Convert the page number and limit to integers
+	pageParamInt, err := strconv.Atoi(pageParam)
+	if err != nil {
+		return 0, 0
+	}
+	limitInt, err = strconv.Atoi(limit)
+	if err != nil {
+		return 0, 0
+	}
+
+	return pageParamInt, limitInt
 }

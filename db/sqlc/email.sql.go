@@ -56,40 +56,29 @@ func (q *Queries) GetEmails(ctx context.Context) ([]Email, error) {
 	return items, nil
 }
 
-const getTrackerByUUID = `-- name: GetTrackerByUUID :one
-SELECT tracker_id, open_date, email_uuid, ip_address FROM tracker WHERE email_uuid = $1
+const getEmailsWithPagination = `-- name: GetEmailsWithPagination :many
+SELECT recipient, subject, send_date, uuid FROM email ORDER BY send_date DESC LIMIT $1 OFFSET $2
 `
 
-func (q *Queries) GetTrackerByUUID(ctx context.Context, emailUuid uuid.UUID) (Tracker, error) {
-	row := q.db.QueryRow(ctx, getTrackerByUUID, emailUuid)
-	var i Tracker
-	err := row.Scan(
-		&i.TrackerID,
-		&i.OpenDate,
-		&i.EmailUuid,
-		&i.IpAddress,
-	)
-	return i, err
+type GetEmailsWithPaginationParams struct {
+	Limit  int32
+	Offset int32
 }
 
-const getTrackers = `-- name: GetTrackers :many
-SELECT tracker_id, open_date, email_uuid, ip_address FROM tracker
-`
-
-func (q *Queries) GetTrackers(ctx context.Context) ([]Tracker, error) {
-	rows, err := q.db.Query(ctx, getTrackers)
+func (q *Queries) GetEmailsWithPagination(ctx context.Context, arg GetEmailsWithPaginationParams) ([]Email, error) {
+	rows, err := q.db.Query(ctx, getEmailsWithPagination, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Tracker
+	var items []Email
 	for rows.Next() {
-		var i Tracker
+		var i Email
 		if err := rows.Scan(
-			&i.TrackerID,
-			&i.OpenDate,
-			&i.EmailUuid,
-			&i.IpAddress,
+			&i.Recipient,
+			&i.Subject,
+			&i.SendDate,
+			&i.Uuid,
 		); err != nil {
 			return nil, err
 		}
@@ -118,27 +107,6 @@ func (q *Queries) InsertEmail(ctx context.Context, arg InsertEmailParams) (Email
 		&i.Subject,
 		&i.SendDate,
 		&i.Uuid,
-	)
-	return i, err
-}
-
-const insertTracker = `-- name: InsertTracker :one
-INSERT INTO tracker (email_uuid, ip_address) VALUES ($1, $2) RETURNING tracker_id, open_date, email_uuid, ip_address
-`
-
-type InsertTrackerParams struct {
-	EmailUuid uuid.UUID
-	IpAddress *string
-}
-
-func (q *Queries) InsertTracker(ctx context.Context, arg InsertTrackerParams) (Tracker, error) {
-	row := q.db.QueryRow(ctx, insertTracker, arg.EmailUuid, arg.IpAddress)
-	var i Tracker
-	err := row.Scan(
-		&i.TrackerID,
-		&i.OpenDate,
-		&i.EmailUuid,
-		&i.IpAddress,
 	)
 	return i, err
 }

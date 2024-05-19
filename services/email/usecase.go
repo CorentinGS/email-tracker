@@ -37,3 +37,17 @@ func (uc *UseCase) CreateEmail(ctx context.Context, recipient, subject string) (
 		Subject:   subject,
 	})
 }
+
+func (uc *UseCase) GetEmailsWithPagination(ctx context.Context, limit int, offset int) ([]db.Email, error) {
+	return uc.q.GetEmailsWithPagination(ctx, db.GetEmailsWithPaginationParams{
+		Limit:  int32(limit),
+		Offset: int32(offset),
+	})
+}
+
+func (uc *UseCase) GetTrackersWithPagination(ctx context.Context, limit int, offset int) ([]db.Tracker, error) {
+	return uc.q.GetTrackersWithPagination(ctx, db.GetTrackersWithPaginationParams{
+		Limit:  int32(limit),
+		Offset: int32(offset),
+	})
+}

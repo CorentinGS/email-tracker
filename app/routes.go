@@ -35,9 +35,12 @@ func registerRoutes(e *echo.Echo) {
 	connectedGroup := e.Group("/admin")
 	connectedGroup.Use(jwtMiddleware.AuthorizeUser)
 	connectedGroup.GET("", pageController.GetAdmin)
+	connectedGroup.POST("/email", emailController.PostEmail)
+	connectedGroup.GET("/emails", emailController.GetEmails)
+	connectedGroup.GET("/trackers", emailController.GetTrackers)
 
 	// Email routes
-	e.GET("/image", emailController.GetImage)
+	e.GET("/image/:uuid", emailController.GetImage)
 
 	// Health check
 	e.GET("/health", func(c echo.Context) error {
