@@ -74,31 +74,31 @@ func (u *EmailController) GetImage(c echo.Context) error {
 	// get uuid from uuidString
 	imageUUID, err := uuid.Parse(uuidString)
 	if err != nil {
-		return c.File("assets/img/favicon.ico")
+		return c.File("assets/img/cbimages.png")
 	}
 
 	// get the email from the database
 	email, err := u.useCase.GetEmail(c.Request().Context(), imageUUID)
 	if err != nil {
-		return c.File("assets/img/favicon.ico")
+		return c.File("assets/img/cbimages.png")
 	}
 
 	// add a tracking event
 	err = u.useCase.AddTracking(c.Request().Context(), email, ip)
 	if err != nil {
 		slog.Error("Signature: error adding tracking event", slog.String("error", err.Error()))
-		return c.File("assets/img/favicon.ico")
+		return c.File("assets/img/cbimages.png")
 	}
 
 	// send a message to discord using a webhook
 	err = SendDiscordMessage(c.Request().Context(), email, ip)
 	if err != nil {
 		slog.Error("Signature: error sending discord message", slog.String("error", err.Error()))
-		return c.File("assets/img/favicon.ico")
+		return c.File("assets/img/cbimages.png")
 	}
 
 	// return the image
-	return c.File("assets/img/favicon.ico")
+	return c.File("assets/img/cbimages.png")
 }
 
 type webhook struct {

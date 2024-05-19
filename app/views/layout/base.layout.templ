@@ -10,7 +10,7 @@ templ Base(title string, fromProtected bool, nonce domain.Nonce) {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<meta
 				name="description"
-				content="A spaced repetition app boosted by AI for learning and memorizing anything."
+				content="A great app to track emails and get notified when they are opened."
 			/>
 			<meta name="htmx-config" content='{"selfRequestsOnly":"true"}'/>
 			<meta name="google" content="notranslate"/>
@@ -19,12 +19,7 @@ templ Base(title string, fromProtected bool, nonce domain.Nonce) {
 			<title>{ title }</title>
 			<script src="/static/js/htmx.min.js" nonce={ nonce.HtmxNonce } defer></script>
 			<script src="/static/js/hyperscript.min.js" nonce={ nonce.HyperscriptNonce } defer></script>
-			<script src="/static/js/preload.js" nonce={ nonce.PreloadNonce } defer></script>
-			<script defer nonce={ nonce.UmamiNonce } src="https://umami.memnix.app/script.js" data-domains="beta.memnix.app,memnix.app" data-website-id="9dde32bf-4daa-4d93-9d66-c22c74895024"></script>
-			// <script src="https://cdn.tailwindcss.com"></script>
-			// <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css"/>
-			// <link rel="preconnect" href="https://fonts.bunny.net"/>
-			// <link href="https://fonts.bunny.net/css?family=nunito:500,600|syne:500,600&display=swap" rel="stylesheet"/>
+			<script src="/static/js/preload.js" nonce={ nonce.PreloadNonce } defer></script> 
 			// Favicon
 			<link rel="icon" href="/static/img/favicon.ico" type="image/x-icon"/>
 		</head>

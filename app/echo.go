@@ -65,7 +65,7 @@ func CSPMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		_ = "sha256-pgn1TCGZX6O77zDvy0oTODMOxemn0oj0LeCnQTRj7Kg="
 
 		cspHeader := fmt.Sprintf(
-			"default-src 'self'; connect-src 'self' https://umami.memnix.app https://discord.com; script-src 'nonce-%s' 'nonce-%s' 'nonce-%s' 'nonce-%s' 'nonce-%s'; style-src 'self' 'unsafe-inline' https://fonts.gstatic.com fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com",
+			"default-src 'self'; connect-src 'self' https://discord.com; script-src 'nonce-%s' 'nonce-%s' 'nonce-%s' 'nonce-%s' 'nonce-%s'; style-src 'self' 'unsafe-inline' https://fonts.gstatic.com fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com",
 			htmxNonce, cssScopeInlineNonce, hyperscriptNonce, preloadNonce, umamiNonce)
 
 		c.Response().Header().Set("Content-Security-Policy", cspHeader)
