@@ -18,11 +18,12 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -ldflags="-s -w -X 'main.Version=${VERSION}'" -tags prod -o /app/email-tracker ./cmd/v1/main.go \
+RUN go build -ldflags="-s -w -X 'main.Version=${VERSION}'" -tags prod -o /app/email-tracker ./cmd/main.go \
     && upx /app/email-tracker \
     && wget -q -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 \
     && chmod +x /usr/local/bin/dumb-init \
-    && apk del upx
+    && apk del upx \
+    && mv ./config/config.yml /app/config.yml
 
 
 FROM gcr.io/distroless/static:nonroot AS production
@@ -37,6 +38,7 @@ WORKDIR /app
 COPY --from=builder  /app/email-tracker /app/email-tracker
 COPY --from=builder  /usr/local/bin/dumb-init /usr/bin/dumb-init
 COPY --from=busybox:1.36.1-musl /bin/wget /usr/bin/wget
+COPY --from=builder /app/config.yml /app/config/config.yml
 
 EXPOSE 1815
 

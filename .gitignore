@@ -31,10 +31,6 @@ docker-*
 /scripts/*.bin
 /scripts/vegeta*
 
-config/keys/*
-
-config*.yml
-
 
 .cache_ggshield
 devbox.lock

@@ -1,0 +1,17 @@
+app:
+  name: tracker
+  version: 0.0.1
+http:
+  port: 1815
+  host: localhost
+logger:
+  level: debug
+postgres:
+  url: postgresql://172.17.0.1:5439/tracker?user=tracker&password=tracker
+  pool_max: 2
+auth:
+  access_token: your_access_token
+
+jwt:
+  jwt_header_len: 2
+  jwt_expiration: 92

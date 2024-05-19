@@ -107,7 +107,7 @@ func (u *EmailController) PostEmail(c echo.Context) error {
 		return RedirectToErrorPage(c, http.StatusInternalServerError)
 	}
 
-	adminErrorComponent := page.AdminError("Email link: " + email.Uuid.String())
+	adminErrorComponent := page.AdminError("Email link: https://tracker.corentings.dev/image/" + email.Uuid.String())
 
 	return Render(c, http.StatusOK, adminErrorComponent)
 }
@@ -172,7 +172,7 @@ func (u *EmailController) GetTrackers(c echo.Context) error {
 	return Render(c, http.StatusOK, adminTrackersComponent)
 }
 
-func getPageLimitValues(c echo.Context) (pageParamInt int, limitInt int) {
+func getPageLimitValues(c echo.Context) (int, int) {
 	pageParam := c.QueryParam("page")
 	limit := c.QueryParam("limit")
 
@@ -181,7 +181,7 @@ func getPageLimitValues(c echo.Context) (pageParamInt int, limitInt int) {
 	if err != nil {
 		return 0, 0
 	}
-	limitInt, err = strconv.Atoi(limit)
+	limitInt, err := strconv.Atoi(limit)
 	if err != nil {
 		return 0, 0
 	}

@@ -102,5 +102,4 @@ go.work
 
 # Security sensitive files
 *.pem
-config/*.yml
 node_modules
