@@ -1,0 +1,48 @@
+package page
+
+import "github.com/corentings/email-tracker/app/views/layout"
+import "github.com/corentings/email-tracker/domain"
+
+templ Hero() {
+	<section>
+		<h1>Email Tracker</h1>
+		<p>Track your emails to know if they are read or not</p>
+		<span>Made by <a href="https://corentings.dev">CorentinGS</a></span>
+	</section>
+}
+
+templ Login() {
+
+	<section>
+		<h2>Login</h2>
+		<form action="/login" method="post">
+				<div class="form-group">
+					<input type="password" name="token" placeholder="Token" required class="input-block"/>
+				</div>
+				<button type="submit" class="btn-block">Login</button>
+		</form>
+	</section>
+}
+
+templ Index() {
+	<style>
+	me {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+	}
+	</style>
+	@Hero()
+	@Login()
+}
+
+templ IndexPage(title string,
+	fromProtected bool,
+	nonce domain.Nonce,
+	cmp templ.Component) {
+	@layout.Base(title, fromProtected, nonce) {
+		@cmp
+	}
+}

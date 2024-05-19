@@ -1,0 +1,42 @@
+package page
+
+import "github.com/corentings/email-tracker/app/views/layout"
+import "github.com/corentings/email-tracker/domain"
+
+templ Admin() {
+	<style>
+	me {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+	}
+	</style>
+	<section>
+		<h1>Admin</h1>
+		<p>Here you can manage the site.</p>
+		<form hx-post="/admin/tournaments/" hx-swap="beforeend">
+			<input type="id" name="lichess_id" required placeholder="Tournament ID"/>
+			<button type="submit">Create Tournament</button>
+		</form>
+	</section>
+	<section>
+		<div id="error"></div>
+	</section>
+}
+
+templ AdminError(message string) {
+	<div id="error" hx-swap-oob="true">
+		<p>{ message }</p>
+	</div>
+}
+
+templ AdminPage(title string,
+	fromProtected bool,
+	nonce domain.Nonce,
+	cmp templ.Component) {
+	@layout.Base(title, fromProtected, nonce) {
+		@cmp
+	}
+}

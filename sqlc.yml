@@ -1,0 +1,23 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "./db/query/"
+    schema: "./db/schema.sql"
+    gen:
+      go:
+        package: "db"
+        out: "./db/sqlc"
+        sql_package: "pgx/v5"
+        emit_pointers_for_null_types: true
+
+overrides:
+  go:
+    overrides:
+      - db_type: "pg_catalog.timestamp"
+        go_type: "time.Time"
+
+      - db_type: "pg_catalog.text"
+        go_type: "string"
+
+      - column: "*.*uuid"
+        go_type: "github.com/google/uuid.UUID"
