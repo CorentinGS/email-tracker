@@ -3,7 +3,6 @@ package jwt
 import (
 	"context"
 	"log/slog"
-	"sync"
 	"time"
 
 	"github.com/corentings/email-tracker/pkg/utils"
@@ -11,30 +10,6 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/ed25519"
 )
-
-type InstanceSingleton struct {
-	jwtInstance Instance
-}
-
-var (
-	jwtInstance *InstanceSingleton //nolint:gochecknoglobals //Singleton
-	jwtOnce     sync.Once          //nolint:gochecknoglobals //Singleton
-)
-
-func GetJwtInstance() *InstanceSingleton {
-	jwtOnce.Do(func() {
-		jwtInstance = &InstanceSingleton{}
-	})
-	return jwtInstance
-}
-
-func (j *InstanceSingleton) GetJwt() Instance {
-	return j.jwtInstance
-}
-
-func (j *InstanceSingleton) SetJwt(instance Instance) {
-	j.jwtInstance = instance
-}
 
 type Instance struct {
 	SigningMethod         jwt.SigningMethod
@@ -44,17 +19,64 @@ type Instance struct {
 	ExpirationTimeInHours int
 }
 
+var jwtInstance *Instance //nolint:gochecknoglobals //TODO: Refactor to remove global variable
+
+func GetJwtInstance() *Instance {
+	if jwtInstance == nil {
+		jwtInstance = &Instance{}
+	}
+	return jwtInstance
+}
+
+func (instance *Instance) SetJwt() {
+	jwtInstance = instance
+}
+
+type InstanceOption func(*Instance)
+
+func WithSigningMethod(method jwt.SigningMethod) InstanceOption {
+	return func(instance *Instance) {
+		instance.SigningMethod = method
+	}
+}
+
+func WithKeys(publicKey ed25519.PublicKey, privateKey ed25519.PrivateKey) InstanceOption {
+	return func(instance *Instance) {
+		instance.PublicKey = publicKey
+		instance.PrivateKey = privateKey
+	}
+}
+
+func WithHeaderLen(headerLen int) InstanceOption {
+	return func(instance *Instance) {
+		instance.HeaderLen = headerLen
+	}
+}
+
+func WithExpirationTime(expirationTimeInHours int) InstanceOption {
+	return func(instance *Instance) {
+		instance.ExpirationTimeInHours = expirationTimeInHours
+	}
+}
+
+func NewInstance(options ...InstanceOption) *Instance {
+	instance := &Instance{}
+	for _, option := range options {
+		option(instance)
+	}
+	return instance
+}
+
 // NewJWTInstance return a new JwtInstance with the given parameters.
 func NewJWTInstance(headerLen, expirationTime int,
 	publicKey ed25519.PublicKey, privateKey ed25519.PrivateKey,
-) Instance {
-	return Instance{
-		HeaderLen:             headerLen,
-		PublicKey:             publicKey,
-		PrivateKey:            privateKey,
-		SigningMethod:         jwt.SigningMethodEdDSA,
-		ExpirationTimeInHours: expirationTime,
-	}
+) *Instance {
+	return NewInstance(
+		WithSigningMethod(jwt.SigningMethodEdDSA),
+		WithKeys(publicKey, privateKey),
+		WithHeaderLen(headerLen),
+		WithExpirationTime(expirationTime),
+	)
 }
 
 // GenerateToken generates a jwt token from a user id

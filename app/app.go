@@ -37,7 +37,7 @@ func Run(cfg *config.Config) error {
 	jwtInstance := jwt.NewJWTInstance(cfg.JWT.HeaderLen, cfg.JWT.Expiration,
 		km.GetPublicKey(), km.GetPrivateKey())
 
-	jwt.GetJwtInstance().SetJwt(jwtInstance)
+	jwtInstance.SetJwt() // TODO: Refactor to remove global variable
 
 	slog.Info("starting server 🚀")
 

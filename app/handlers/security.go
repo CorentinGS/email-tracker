@@ -34,7 +34,7 @@ func (j *JwtMiddleware) IsConnectedMiddleware(_ domain.Permission, next echo.Han
 
 		token := cookie.Value
 
-		_, err = jwt.GetJwtInstance().GetJwt().GetConnectedUserID(c.Request().Context(), token)
+		_, err = jwt.GetJwtInstance().GetConnectedUserID(c.Request().Context(), token)
 		if err != nil {
 			slog.Error("IsConnectedMiddleware: error getting connected user id", slog.String("error", err.Error()))
 			_ = RedirectToErrorPage(c, http.StatusUnauthorized)
