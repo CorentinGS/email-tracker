@@ -16,7 +16,6 @@ import (
 )
 
 func Run(cfg *config.Config) error {
-
 	l := logger.NewLogger(logger.WithLogLevel(cfg.Log.Level)).SetAsGlobalHandler()
 
 	if l.GetLogLevel() == slog.LevelDebug {
