@@ -16,9 +16,10 @@ import (
 )
 
 func Run(cfg *config.Config) error {
-	logger.GetLogger().SetLogLevel(cfg.Log.Level).CreateGlobalHandler()
 
-	if logger.GetLogger().GetLogLevel() == slog.LevelDebug {
+	l := logger.NewLogger(logger.WithLogLevel(cfg.Log.Level)).SetAsGlobalHandler()
+
+	if l.GetLogLevel() == slog.LevelDebug {
 		slog.Debug("🔧 Debug mode enabled")
 	}
 
