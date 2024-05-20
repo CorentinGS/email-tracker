@@ -45,7 +45,7 @@ func (u *EmailController) Login(c echo.Context) error {
 	}
 
 	// create a new jwt
-	jwt, err := jwt.GetJwtInstance().GetJwt().GenerateToken(c.Request().Context(), 1)
+	jwt, err := jwt.GetJwtInstance().GenerateToken(c.Request().Context(), 1)
 	if err != nil {
 		slog.Error("Login: error generating jwt", slog.String("error", err.Error()))
 		return RedirectToErrorPage(c, http.StatusInternalServerError)
