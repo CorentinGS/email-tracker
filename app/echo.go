@@ -22,7 +22,7 @@ func NewEcho(cfg *config.Config) *echo.Echo {
 
 func registerMiddlewares(e *echo.Echo, cfg *config.Config) {
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost", cfg.HTTP.Host, "https://discord.com", "*"},
+		AllowOrigins: []string{"*"},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 
@@ -65,7 +65,7 @@ func CSPMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		_ = "sha256-pgn1TCGZX6O77zDvy0oTODMOxemn0oj0LeCnQTRj7Kg="
 
 		cspHeader := fmt.Sprintf(
-			"default-src 'self'; connect-src 'self' https://discord.com; script-src 'nonce-%s' 'nonce-%s' 'nonce-%s' 'nonce-%s' 'nonce-%s'; style-src 'self' 'unsafe-inline' https://fonts.gstatic.com fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com",
+			"default-src 'self'; connect-src 'self' ; script-src 'nonce-%s' 'nonce-%s' 'nonce-%s' 'nonce-%s' 'nonce-%s'; style-src 'self' 'unsafe-inline' https://fonts.gstatic.com fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com",
 			htmxNonce, cssScopeInlineNonce, hyperscriptNonce, preloadNonce, umamiNonce)
 
 		c.Response().Header().Set("Content-Security-Policy", cspHeader)

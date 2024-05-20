@@ -31,7 +31,7 @@ type (
 
 	// Log -.
 	Log struct {
-		Level string `env-required:"true" env:"LOG_LEVEL" yaml:"level" env-default:"info"`
+		Level string `env-required:"true" env:"LOG_LEVEL" yaml:"level" env-default:"warning"`
 	}
 
 	// PG -.
