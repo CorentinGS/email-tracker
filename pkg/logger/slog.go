@@ -6,13 +6,13 @@ import (
 )
 
 type Logger struct {
-	logLevel slog.Level
 	l        *slog.Logger
+	logLevel slog.Level
 }
 
-type LoggerOption func(*Logger)
+type Option func(*Logger)
 
-func WithLogLevel(level string) LoggerOption {
+func WithLogLevel(level string) Option {
 	return func(l *Logger) {
 		switch level {
 		case "debug":
@@ -31,7 +31,7 @@ func WithLogLevel(level string) LoggerOption {
 	}
 }
 
-func NewLogger(options ...LoggerOption) *Logger {
+func NewLogger(options ...Option) *Logger {
 	logger := &Logger{
 		logLevel: slog.LevelInfo,
 		l:        slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo})),
@@ -49,7 +49,6 @@ func (l *Logger) GetLogLevel() slog.Level {
 }
 
 func (l *Logger) SetAsGlobalHandler() *Logger {
-
 	slog.SetDefault(l.l)
 
 	return l
