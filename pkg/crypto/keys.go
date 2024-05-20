@@ -6,7 +6,6 @@ import (
 	"io"
 	"log/slog"
 	"os"
-	"sync"
 
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/ed25519"
@@ -18,10 +17,44 @@ type KeyManager struct {
 	publicKey  ed25519.PublicKey
 }
 
-var (
-	keyManagerInstance *KeyManager //nolint:gochecknoglobals //Singleton
-	keyManagerOnce     sync.Once   //nolint:gochecknoglobals //Singleton
-)
+type KeyManagerOption func(*KeyManager)
+
+func WithSeed(seed io.Reader) KeyManagerOption {
+	return func(km *KeyManager) {
+		km.seed = seed
+	}
+}
+
+func WithKeys(publicKey ed25519.PublicKey, privateKey ed25519.PrivateKey) KeyManagerOption {
+	return func(km *KeyManager) {
+		km.publicKey = publicKey
+		km.privateKey = privateKey
+	}
+}
+
+func NewKeyManager(options ...KeyManagerOption) (*KeyManager, error) {
+	publicKey, privateKey, err := retrieveKeys()
+	if err != nil {
+		slog.Debug("Error retrieving keys", slog.Any("error", err))
+		publicKey, privateKey, err = GenerateKeyPair()
+		if err != nil {
+			slog.Error("Error generating keys", slog.Any("error", err))
+			return nil, err
+		}
+	}
+
+	km := &KeyManager{
+		seed:       rand.Reader,
+		privateKey: privateKey,
+		publicKey:  publicKey,
+	}
+
+	for _, option := range options {
+		option(km)
+	}
+
+	return km, nil
+}
 
 func (k *KeyManager) GetPrivateKey() ed25519.PrivateKey {
 	return k.privateKey
@@ -109,27 +142,4 @@ func retrieveKeys() (ed25519.PublicKey, ed25519.PrivateKey, error) {
 
 	slog.Debug("Keys retrieved successfully")
 	return publicKey, privateKey, nil
-}
-
-func GetKeyManagerInstance() *KeyManager {
-	keyManagerOnce.Do(func() {
-		// Try to retrieve keys from the .gob file
-		publicKey, privateKey, err := retrieveKeys()
-		if err != nil {
-			slog.Debug("Error retrieving keys", slog.Any("error", err))
-			// If the file doesn't exist or there was an error retrieving the keys, generate new keys
-			publicKey, privateKey, err = GenerateKeyPair()
-			if err != nil {
-				// Handle error
-				slog.Error("Error generating keys", slog.Any("error", err))
-			}
-		}
-
-		keyManagerInstance = &KeyManager{
-			seed:       rand.Reader,
-			privateKey: privateKey,
-			publicKey:  publicKey,
-		}
-	})
-	return keyManagerInstance
 }

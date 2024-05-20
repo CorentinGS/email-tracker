@@ -27,11 +27,15 @@ func Run(cfg *config.Config) error {
 	}
 
 	// Parse the keys
-	crypto.GetKeyManagerInstance()
+	km, err := crypto.NewKeyManager()
+	if err != nil {
+		slog.Error("error creating key manager", slog.Any("error", err))
+		return err
+	}
 
 	// Create the JWT instance
 	jwtInstance := jwt.NewJWTInstance(cfg.JWT.HeaderLen, cfg.JWT.Expiration,
-		crypto.GetKeyManagerInstance().GetPublicKey(), crypto.GetKeyManagerInstance().GetPrivateKey())
+		km.GetPublicKey(), km.GetPrivateKey())
 
 	jwt.GetJwtInstance().SetJwt(jwtInstance)
 
@@ -43,7 +47,7 @@ func Run(cfg *config.Config) error {
 	defer stop()
 
 	go func() {
-		if err := e.Start(":" + cfg.Port); err != nil {
+		if err = e.Start(":" + cfg.Port); err != nil {
 			slog.Error("error starting server", slog.Any("error", err))
 			os.Exit(1)
 		}
@@ -55,7 +59,7 @@ func Run(cfg *config.Config) error {
 	_, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
 
-	if err := e.Shutdown(ctx); err != nil {
+	if err = e.Shutdown(ctx); err != nil {
 		slog.Error("error shutting down server", slog.Any("error", err))
 	}
 
