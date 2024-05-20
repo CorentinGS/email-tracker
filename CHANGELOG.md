@@ -1,3 +1,25 @@
+## 0.2.2 (2024-05-19)
+
+### 🐛🚑️ Fixes
+
+- fix url
+
+## 0.2.1 (2024-05-19)
+
+### 🐛🚑️ Fixes
+
+- **image**: fix image path
+
+## 0.2.0 (2024-05-19)
+
+### ✨ Features
+
+- **image**: change the image
+
+### 💚👷 CI & Build
+
+- edit github actions
+
 ## 0.1.0 (2024-05-19)
 
 ### ✨ Features
