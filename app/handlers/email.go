@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/corentings/email-tracker/app/views/components"
 	"github.com/corentings/email-tracker/app/views/page"
 	"github.com/corentings/email-tracker/config"
 	db "github.com/corentings/email-tracker/db/sqlc"
@@ -188,7 +189,7 @@ func (u *EmailController) GetEmails(c echo.Context) error {
 
 	slog.Debug("GetEmails: emails", slog.Int("count", len(emails)))
 	// render the emails
-	adminEmailsComponent := page.ListEmails(emails, pageParam)
+	adminEmailsComponent := components.ListEmails(emails, pageParam)
 
 	return Render(c, http.StatusOK, adminEmailsComponent)
 }
@@ -218,7 +219,7 @@ func (u *EmailController) GetTrackers(c echo.Context) error {
 
 	slog.Debug("GetTrackers: trackers", slog.Int("count", len(trackers)))
 	// render the trackers
-	adminTrackersComponent := page.ListTrackers(trackers, pageParam)
+	adminTrackersComponent := components.ListTrackers(trackers, pageParam)
 
 	return Render(c, http.StatusOK, adminTrackersComponent)
 }
