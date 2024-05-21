@@ -1,0 +1,17 @@
+package components
+
+import db "github.com/corentings/email-tracker/db/sqlc"
+import "strconv"
+
+
+templ ListEmails(emails []db.Email, page int) {
+	for _, email := range emails {
+		<tr>
+			<td>{ templ.JoinStringErrs(email.SendDate.String()) }</td>
+			<td>{ email.Recipient }</td>
+			<td>{ email.Subject }</td>
+			<td>{ email.Uuid.String() }</td>
+		</tr>
+	}
+	<tr hx-get={ "/admin/emails?page=" + strconv.Itoa(page+1) + "&limit=10" } hx-trigger="intersect" hx-swap="outerHTML"></tr>
+}
