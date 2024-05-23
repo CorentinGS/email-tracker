@@ -71,14 +71,6 @@ func (p *Postgres) Close() {
 	p.Pool.Close()
 }
 
-func GetPostgresInstance() *Postgres {
-	connOnce.Do(func() {
-		postgresInstance = &Postgres{}
-	})
-
-	return postgresInstance
-}
-
 func GetPool() *pgxpool.Pool {
 	return postgresInstance.Pool
 }
