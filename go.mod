@@ -28,7 +28,6 @@ require (
 )
 
 require (
-	github.com/bytedance/gopkg v0.0.0-20240514070511-01b2cbcf35e1
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
