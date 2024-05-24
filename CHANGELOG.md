@@ -1,3 +1,18 @@
+## 0.2.5 (2024-05-24)
+
+### ♻️  Refactorings
+
+- improve code and remove dead code
+- improve code and remove dead code
+
+### bump
+
+- version 0.2.3 → 0.2.4
+
+### 🎨🏗️ Style & Architecture
+
+- style & remove dead code
+
 ## 0.2.4 (2024-05-21)
 
 ### 🐛🚑️ Fixes
