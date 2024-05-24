@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"sync"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -23,7 +22,6 @@ type Postgres struct {
 
 var (
 	postgresInstance *Postgres //nolint:gochecknoglobals //Singleton
-	connOnce         sync.Once //nolint:gochecknoglobals //Singleton
 )
 
 func New(url string, opts ...Option) error {

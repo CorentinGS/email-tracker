@@ -38,10 +38,12 @@ func (u *EmailController) Login(c echo.Context) error {
 
 	// if token is empty
 	if token == "" {
+		slog.Debug("Login: token is empty")
 		return RedirectToErrorPage(c, http.StatusBadRequest)
 	}
 
 	if token != config.AccessToken {
+		slog.Debug("Login: token is invalid")
 		return RedirectToErrorPage(c, http.StatusUnauthorized)
 	}
 
