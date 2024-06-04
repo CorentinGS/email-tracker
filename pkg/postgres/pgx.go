@@ -20,9 +20,7 @@ type Postgres struct {
 	connTimeout  time.Duration
 }
 
-var (
-	postgresInstance *Postgres //nolint:gochecknoglobals //Singleton
-)
+var postgresInstance *Postgres //nolint:gochecknoglobals //Singleton
 
 func New(url string, opts ...Option) error {
 	p := &Postgres{

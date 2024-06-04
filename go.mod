@@ -1,6 +1,6 @@
 module github.com/corentings/email-tracker
 
-go 1.22.1
+go 1.21.10
 
 require (
 	github.com/a-h/templ v0.2.707
