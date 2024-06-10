@@ -45,3 +45,4 @@ node_modules
 .vscode
 .devbox
 *.gob
+megalinter-reports/*
