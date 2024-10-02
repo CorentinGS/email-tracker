@@ -37,7 +37,7 @@ WORKDIR /app
 
 COPY --from=builder  /app/email-tracker /app/email-tracker
 COPY --from=builder  /usr/local/bin/dumb-init /usr/bin/dumb-init
-COPY --from=busybox:1.36.1-musl /bin/wget /usr/bin/wget
+COPY --from=busybox:1.37.0-musl /bin/wget /usr/bin/wget
 COPY --from=builder /app/config.yml /app/config/config.yml
 
 EXPOSE 1815
